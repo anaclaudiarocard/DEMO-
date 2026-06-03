@@ -1,0 +1,323 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.app{font-family:var(--font-sans);color:var(--color-text-primary);padding:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)}
+.topbar h1{font-size:16px;font-weight:500}
+.topbar-meta{font-size:12px;color:var(--color-text-secondary)}
+.step-nav{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);padding:0 20px}
+.step-btn{padding:10px 18px;font-size:13px;color:var(--color-text-secondary);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.step-btn.active{color:var(--color-text-primary);font-weight:500;border-bottom:2px solid var(--color-text-primary)}
+.step-btn:hover:not(.active){color:var(--color-text-primary);background:var(--color-background-primary)}
+.panel{display:none;padding:20px}
+.panel.active{display:block}
+.section-title{font-size:13px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+.upload-zone{border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:24px;text-align:center;cursor:pointer;transition:background .15s;margin-bottom:12px}
+.upload-zone:hover{background:var(--color-background-secondary)}
+.upload-zone i{font-size:28px;color:var(--color-text-tertiary);display:block;margin-bottom:8px}
+.upload-zone p{font-size:13px;color:var(--color-text-secondary)}
+.upload-zone .fname{font-size:12px;color:var(--color-text-tertiary);margin-top:4px}
+.file-done{border-color:var(--color-border-success);background:var(--color-background-success)}
+.file-done i{color:var(--color-text-success)}
+.file-done p{color:var(--color-text-success)}
+.run-btn{width:100%;padding:12px;font-size:14px;font-weight:500;background:var(--color-text-primary);color:var(--color-background-primary);border:none;border-radius:var(--border-radius-md);cursor:pointer;margin-top:8px;transition:opacity .15s}
+.run-btn:hover{opacity:.85}
+.run-btn:disabled{opacity:.4;cursor:not-allowed}
+.metrics-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:20px}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px}
+.metric-label{font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px}
+.metric-value{font-size:20px;font-weight:500}
+.metric-sub{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.metric-up{color:var(--color-text-success)}
+.metric-down{color:var(--color-text-danger)}
+.alerts-box{border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);overflow:hidden;margin-bottom:20px}
+.alert-row{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.alert-row:last-child{border-bottom:none}
+.alert-pill{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;margin-top:1px}
+.pill-danger{background:var(--color-background-danger);color:var(--color-text-danger)}
+.pill-warn{background:var(--color-background-warning);color:var(--color-text-warning)}
+.pill-info{background:var(--color-background-info);color:var(--color-text-info)}
+.alert-text{font-size:13px;line-height:1.5}
+.alert-text strong{font-weight:500}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px}
+.card h3{font-size:13px;font-weight:500;margin-bottom:12px;color:var(--color-text-secondary)}
+.table-wrap{width:100%;border-collapse:collapse;font-size:12px}
+.table-wrap th{text-align:left;padding:6px 8px;color:var(--color-text-tertiary);font-weight:400;border-bottom:0.5px solid var(--color-border-tertiary)}
+.table-wrap td{padding:7px 8px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.table-wrap tr:last-child td{border-bottom:none}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bar-label{font-size:12px;color:var(--color-text-secondary);width:80px;text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:8px;background:var(--color-background-secondary);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width .4s}
+.bar-val{font-size:12px;color:var(--color-text-secondary);width:44px;flex-shrink:0}
+.proj-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px}
+.proj-row:last-child{border-bottom:none}
+.trend-up{color:var(--color-text-success)}
+.trend-dn{color:var(--color-text-danger)}
+.chart-area{height:120px;display:flex;align-items:flex-end;gap:6px;padding-top:8px}
+.bar-c{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar-c .b{border-radius:3px 3px 0 0;width:100%;transition:height .3s}
+.bar-c .bl{font-size:10px;color:var(--color-text-tertiary)}
+.resumen-header{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:16px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.resumen-header h2{font-size:16px;font-weight:500}
+.resumen-header p{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.share-btn{padding:8px 16px;font-size:13px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--color-text-primary)}
+.share-btn:hover{background:var(--color-background-secondary)}
+.config-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px}
+.config-row:last-child{border-bottom:none}
+.config-row label{color:var(--color-text-secondary);font-size:12px}
+.toggle{width:36px;height:20px;border-radius:10px;background:var(--color-border-secondary);border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on{background:#1D9E75}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s}
+.toggle.on::after{transform:translateX(16px)}
+.processing{text-align:center;padding:40px 20px}
+.processing i{font-size:32px;color:var(--color-text-tertiary);display:block;margin-bottom:12px}
+.processing p{font-size:14px;color:var(--color-text-secondary)}
+.progress-bar{height:4px;background:var(--color-background-secondary);border-radius:2px;margin:16px auto;max-width:240px;overflow:hidden}
+.progress-fill{height:100%;background:#534AB7;border-radius:2px;animation:prog 2.2s ease-out forwards}
+@keyframes prog{from{width:0%}to{width:100%}}
+</style>
+
+<h2 class="sr-only">Prototipo del sistema de análisis financiero y cobranza: carga archivos, procesa con IA y genera reportes con alertas, balances y proyecciones.</h2>
+
+<div class="app">
+  <div class="topbar">
+    <div>
+      <h1>Sistema de análisis financiero</h1>
+      <div class="topbar-meta">Empresa XYZ S.A.C. &nbsp;·&nbsp; Periodo: Mayo 2025</div>
+    </div>
+    <div style="font-size:12px;color:var(--color-text-tertiary)">Prototipo de demostración</div>
+  </div>
+
+  <div class="step-nav">
+    <button class="step-btn active" onclick="goStep(0)"><i class="ti ti-upload" style="font-size:14px;vertical-align:-2px;margin-right:4px" aria-hidden="true"></i>Cargar archivos</button>
+    <button class="step-btn" onclick="goStep(1)" id="btn1"><i class="ti ti-chart-bar" style="font-size:14px;vertical-align:-2px;margin-right:4px" aria-hidden="true"></i>Resultado</button>
+    <button class="step-btn" onclick="goStep(2)" id="btn2"><i class="ti ti-settings" style="font-size:14px;vertical-align:-2px;margin-right:4px" aria-hidden="true"></i>Configurar análisis</button>
+  </div>
+
+  <!-- PASO 0: CARGA -->
+  <div class="panel active" id="panel0">
+    <div class="section-title">Fuentes de datos</div>
+
+    <div class="upload-zone file-done" id="uz1" onclick="toggleFile(1)">
+      <i class="ti ti-file-type-pdf" aria-hidden="true"></i>
+      <p>Informe PDF — Reporte Financiero Mayo 2025.pdf</p>
+      <div class="fname">Cargado · 847 KB</div>
+    </div>
+
+    <div class="upload-zone file-done" id="uz2" onclick="toggleFile(2)">
+      <i class="ti ti-file-spreadsheet" aria-hidden="true"></i>
+      <p>Excel ventas y cobranzas — Cuadro_VentasCob_Mayo25.xlsx</p>
+      <div class="fname">Cargado · 214 KB</div>
+    </div>
+
+    <div class="upload-zone file-done" id="uz3" onclick="toggleFile(3)">
+      <i class="ti ti-file-spreadsheet" aria-hidden="true"></i>
+      <p>Excel información — Plantilla_Informacion.xlsx</p>
+      <div class="fname">Cargado · 98 KB</div>
+    </div>
+
+    <button class="run-btn" onclick="runProcess()">
+      <i class="ti ti-brain" style="font-size:16px;vertical-align:-2px;margin-right:6px" aria-hidden="true"></i>
+      Procesar con IA
+    </button>
+  </div>
+
+  <!-- PASO 0b: PROCESANDO -->
+  <div class="panel" id="panel0b">
+    <div class="processing">
+      <i class="ti ti-refresh" aria-hidden="true"></i>
+      <p id="proc-msg">Leyendo informe PDF...</p>
+      <div class="progress-bar"><div class="progress-fill"></div></div>
+      <p style="font-size:12px;color:var(--color-text-tertiary);margin-top:8px">Esto tomará unos segundos</p>
+    </div>
+  </div>
+
+  <!-- PASO 1: RESULTADO -->
+  <div class="panel" id="panel1">
+
+    <!-- KPIs -->
+    <div class="section-title">Resumen ejecutivo</div>
+    <div class="metrics-grid">
+      <div class="metric">
+        <div class="metric-label">Cartera total</div>
+        <div class="metric-value">S/ 2.84M</div>
+        <div class="metric-sub metric-up">+8.2% vs abril</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Cobranza efectiva</div>
+        <div class="metric-value">78.4%</div>
+        <div class="metric-sub metric-down">-3.1% vs meta</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Morosidad</div>
+        <div class="metric-value">14.7%</div>
+        <div class="metric-sub metric-down">Limite: 12%</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Dias prom. cobro</div>
+        <div class="metric-value">38.2</div>
+        <div class="metric-sub metric-down">Meta: 30 dias</div>
+      </div>
+    </div>
+
+    <!-- ALERTAS -->
+    <div class="section-title">Alertas detectadas (PDF + datos)</div>
+    <div class="alerts-box">
+      <div class="alert-row">
+        <span class="alert-pill pill-danger">Critica</span>
+        <div class="alert-text"><strong>Morosidad supera el limite configurado:</strong> 14.7% contra techo de 12%. Acumulado de 3 meses consecutivos al alza. Revisar clientes segmento B.</div>
+      </div>
+      <div class="alert-row">
+        <span class="alert-pill pill-danger">Critica</span>
+        <div class="alert-text"><strong>Cliente DISTRIBUIDORA NORTE SAC:</strong> deuda vencida >90 dias por S/ 127,400. Sin acuerdo de pago registrado. Riesgo de castigo contable.</div>
+      </div>
+      <div class="alert-row">
+        <span class="alert-pill pill-warn">Atención</span>
+        <div class="alert-text"><strong>Cobranza de mayo por debajo de meta:</strong> S/ 1.94M recaudado vs S/ 2.23M proyectado. Brecha de S/ 290K. Impacta flujo de caja junio.</div>
+      </div>
+      <div class="alert-row">
+        <span class="alert-pill pill-warn">Atención</span>
+        <div class="alert-text"><strong>El informe PDF menciona riesgo regulatorio:</strong> posible cambio en tasas de interés moratorio desde julio 2025. Revisar contratos vigentes.</div>
+      </div>
+      <div class="alert-row">
+        <span class="alert-pill pill-info">Info</span>
+        <div class="alert-text"><strong>4 clientes nuevos incorporados en mayo</strong> representan el 11% de la cartera. Monitorear comportamiento de pago en primeros 60 dias.</div>
+      </div>
+    </div>
+
+    <!-- ANÁLISIS + PROYECCIÓN -->
+    <div class="two-col">
+      <div class="card">
+        <h3>Balance de cobranza — mayo 2025</h3>
+        <table class="table-wrap">
+          <tr><th>Concepto</th><th style="text-align:right">Monto (S/)</th></tr>
+          <tr><td>Cartera vigente</td><td style="text-align:right">2,426,000</td></tr>
+          <tr><td>Cartera vencida 1–30d</td><td style="text-align:right">198,400</td></tr>
+          <tr><td>Cartera vencida 31–90d</td><td style="text-align:right">89,200</td></tr>
+          <tr><td>Cartera vencida +90d</td><td style="text-align:right">127,400</td></tr>
+          <tr><td style="font-weight:500">Total cartera</td><td style="text-align:right;font-weight:500">2,841,000</td></tr>
+          <tr><td>Cobranza recaudada</td><td style="text-align:right;color:var(--color-text-success)">1,940,000</td></tr>
+          <tr><td>Pendiente del mes</td><td style="text-align:right;color:var(--color-text-danger)">−901,000</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Proyección flujo de cobranza</h3>
+        <div class="proj-row"><span>Junio 2025</span><span class="trend-up">S/ 2.08M &nbsp;+7.2%</span></div>
+        <div class="proj-row"><span>Julio 2025</span><span class="trend-up">S/ 2.21M &nbsp;+6.3%</span></div>
+        <div class="proj-row"><span>Agosto 2025</span><span class="trend-dn">S/ 1.97M &nbsp;-10.8%</span></div>
+        <div class="proj-row"><span style="font-weight:500">Trim. Q3 2025</span><span style="font-weight:500">S/ 6.26M</span></div>
+        <div style="margin-top:14px">
+          <div class="bar-row"><div class="bar-label">Jun</div><div class="bar-track"><div class="bar-fill" style="width:87%;background:#1D9E75"></div></div><div class="bar-val">2.08M</div></div>
+          <div class="bar-row"><div class="bar-label">Jul</div><div class="bar-track"><div class="bar-fill" style="width:93%;background:#1D9E75"></div></div><div class="bar-val">2.21M</div></div>
+          <div class="bar-row"><div class="bar-label">Ago</div><div class="bar-track"><div class="bar-fill" style="width:76%;background:#E24B4A"></div></div><div class="bar-val">1.97M</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISTRIBUCIÓN CARTERA -->
+    <div class="card" style="margin-bottom:20px">
+      <h3>Distribución de cartera por segmento</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px">
+        <div>
+          <div class="bar-row"><div class="bar-label">Segmento A</div><div class="bar-track"><div class="bar-fill" style="width:64%;background:#534AB7"></div></div><div class="bar-val">64%</div></div>
+          <div class="bar-row"><div class="bar-label">Segmento B</div><div class="bar-track"><div class="bar-fill" style="width:22%;background:#EF9F27"></div></div><div class="bar-val">22%</div></div>
+          <div class="bar-row"><div class="bar-label">Segmento C</div><div class="bar-track"><div class="bar-fill" style="width:14%;background:#E24B4A"></div></div><div class="bar-val">14%</div></div>
+        </div>
+        <div>
+          <div class="bar-row"><div class="bar-label">Al dia</div><div class="bar-track"><div class="bar-fill" style="width:85%;background:#1D9E75"></div></div><div class="bar-val">85.3%</div></div>
+          <div class="bar-row"><div class="bar-label">1–30d</div><div class="bar-track"><div class="bar-fill" style="width:7%;background:#EF9F27"></div></div><div class="bar-val">7.0%</div></div>
+          <div class="bar-row"><div class="bar-label">31–90d</div><div class="bar-track"><div class="bar-fill" style="width:3%;background:#D85A30"></div></div><div class="bar-val">3.1%</div></div>
+          <div class="bar-row"><div class="bar-label">+90d</div><div class="bar-track"><div class="bar-fill" style="width:4%;background:#E24B4A"></div></div><div class="bar-val">4.5%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESUMEN + COMPARTIR -->
+    <div class="resumen-header">
+      <div>
+        <h2>Reporte listo para compartir</h2>
+        <p>Incluye alertas, balance, análisis y proyecciones — generado el 03/06/2025</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="share-btn" onclick="sendPrompt('Quiero profundizar en el análisis de morosidad y los clientes con mayor riesgo')">
+          <i class="ti ti-zoom-in" style="font-size:15px" aria-hidden="true"></i>Profundizar análisis ↗
+        </button>
+        <button class="share-btn" onclick="alert('En la versión real: genera PDF descargable con logo y formato corporativo.')">
+          <i class="ti ti-download" style="font-size:15px" aria-hidden="true"></i>Descargar PDF
+        </button>
+        <button class="share-btn" onclick="alert('En la versión real: genera un link único compartible válido por 7 días.')">
+          <i class="ti ti-share" style="font-size:15px" aria-hidden="true"></i>Compartir link
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 2: CONFIGURAR -->
+  <div class="panel" id="panel2">
+    <div class="section-title">Umbrales y alertas</div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="config-row">
+        <div><div style="font-size:13px">Alerta de morosidad</div><label>Porcentaje limite</label></div>
+        <div style="display:flex;align-items:center;gap:8px"><input type="range" min="5" max="30" value="12" style="width:100px" oninput="this.nextElementSibling.textContent=this.value+'%'"><span style="font-size:13px;min-width:36px">12%</span></div>
+      </div>
+      <div class="config-row">
+        <div><div style="font-size:13px">Dias promedio de cobro — meta</div><label>Dias objetivo</label></div>
+        <div style="display:flex;align-items:center;gap:8px"><input type="range" min="15" max="60" value="30" style="width:100px" oninput="this.nextElementSibling.textContent=this.value+'d'"><span style="font-size:13px;min-width:36px">30d</span></div>
+      </div>
+      <div class="config-row">
+        <div><div style="font-size:13px">Clientes con deuda +90 dias</div><label>Activar alerta critica</label></div>
+        <button class="toggle on" id="t1" onclick="this.classList.toggle('on')"></button>
+      </div>
+      <div class="config-row">
+        <div><div style="font-size:13px">Alertas del informe PDF</div><label>Detectar menciones de riesgo regulatorio</label></div>
+        <button class="toggle on" id="t2" onclick="this.classList.toggle('on')"></button>
+      </div>
+    </div>
+
+    <div class="section-title">Calculos incluidos en el reporte</div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="config-row"><div style="font-size:13px">Balance de cartera (vigente vs vencida)</div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="config-row"><div style="font-size:13px">Tasa de efectividad de cobranza</div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="config-row"><div style="font-size:13px">Proyeccion de flujo 3 meses</div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="config-row"><div style="font-size:13px">Distribucion por segmento de cliente</div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="config-row"><div style="font-size:13px">Comparativo vs periodo anterior</div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+      <div class="config-row"><div style="font-size:13px">Indice de riesgo de castigo contable</div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+
+    <div class="section-title">Formato de salida</div>
+    <div class="card">
+      <div class="config-row"><div style="font-size:13px">Reporte en pantalla (dashboard)</div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="config-row"><div style="font-size:13px">Exportar a PDF descargable</div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="config-row"><div style="font-size:13px">Link compartible (expira en 7 dias)</div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var steps=[0];
+var msgs=["Leyendo informe PDF...","Cruzando datos de Excel...","Calculando balances y KPIs...","Detectando alertas...","Generando proyecciones..."];
+function goStep(n){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+  document.querySelectorAll('.step-btn').forEach(function(b){b.classList.remove('active')});
+  if(n===0){document.getElementById('panel0').classList.add('active');}
+  else if(n===1){document.getElementById('panel1').classList.add('active');}
+  else if(n===2){document.getElementById('panel2').classList.add('active');}
+  document.querySelectorAll('.step-btn')[n].classList.add('active');
+}
+function runProcess(){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+  document.getElementById('panel0b').classList.add('active');
+  var i=0;
+  var iv=setInterval(function(){
+    i++;
+    if(i<msgs.length){document.getElementById('proc-msg').textContent=msgs[i];}
+    else{clearInterval(iv);setTimeout(function(){goStep(1);},400);}
+  },420);
+}
+function toggleFile(n){
+  var z=document.getElementById('uz'+n);
+  z.classList.toggle('file-done');
+}
+</script>
